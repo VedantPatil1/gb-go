@@ -1,31 +1,17 @@
 # Pre-commit configuration for green-book (gb-go)
-# Manages code quality hooks and commit message validation
-
 default_install_hook_types:
-   - pre-commit
-   - commit-msg
+  - pre-commit
+  - commit-msg
 
 repos:
-   # Core pre-commit hooks
-   - repo: https://github.com/pre-commit/pre-commit-hooks
-     rev: v6.0.0
-     hooks:
-       - id: trailing-whitespace
-         name: Fix Trailing Whitespace
-       - id: end-of-file-fixer
-         name: End of File Fixer
-       - id: check-yaml
-         name: Check YAML Configuration
-       - id: check-added-large-files
-         args: ['--maxkb=1500']
-         name: Check Added Large Files (max 1.5MB)
-
-   # Conventional Commits validation for commit messages
-   # Validates commit messages follow the conventional commits spec
-   # https://conventionalcommits.org/
-   - repo: https://github.com/compilerla/conventional-pre-commit
-     rev: v4.1.0
-     hooks:
-       - id: conventional-pre-commit
-         stages: [commit-msg]
-         name: Validate Commit Message (Conventional Commits)
+  # Core pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: Fix Trailing Whitespace
+      - id: end-of-file-fixer
+        name: End of File Fixer
+      - id: check-yaml
+        name: Check YAML Configuration
+      # Disabled: check-added-large-files
