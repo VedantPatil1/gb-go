@@ -11,15 +11,15 @@ import (
 )
 
 const createAccount = `-- name: CreateAccount :one
-INSERT INTO accounts (id, external_id, name, type, current_balance)
-VALUES (?, ?, ?, ?, ?) RETURNING id, external_id, name, type, current_balance, last_updated, registered_on
+INSERT INTO accounts (id, external_id, name, account_type, current_balance)
+VALUES (?, ?, ?, ?, ?) RETURNING id, external_id, name, account_type, current_balance, last_updated, registered_on
 `
 
 type CreateAccountParams struct {
 	ID             string
 	ExternalID     sql.NullString
 	Name           string
-	Type           string
+	AccountType    string
 	CurrentBalance float64
 }
 
@@ -28,7 +28,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 		arg.ID,
 		arg.ExternalID,
 		arg.Name,
-		arg.Type,
+		arg.AccountType,
 		arg.CurrentBalance,
 	)
 	var i Account
@@ -36,7 +36,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 		&i.ID,
 		&i.ExternalID,
 		&i.Name,
-		&i.Type,
+		&i.AccountType,
 		&i.CurrentBalance,
 		&i.LastUpdated,
 		&i.RegisteredOn,
@@ -45,7 +45,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 }
 
 const getAccount = `-- name: GetAccount :one
-SELECT id, external_id, name, type, current_balance, last_updated, registered_on
+SELECT id, external_id, name, account_type, current_balance, last_updated, registered_on
 FROM accounts
 WHERE id = ?
 `
@@ -57,7 +57,7 @@ func (q *Queries) GetAccount(ctx context.Context, id string) (Account, error) {
 		&i.ID,
 		&i.ExternalID,
 		&i.Name,
-		&i.Type,
+		&i.AccountType,
 		&i.CurrentBalance,
 		&i.LastUpdated,
 		&i.RegisteredOn,
@@ -66,7 +66,7 @@ func (q *Queries) GetAccount(ctx context.Context, id string) (Account, error) {
 }
 
 const listAccounts = `-- name: ListAccounts :many
-SELECT id, external_id, name, type, current_balance, last_updated, registered_on
+SELECT id, external_id, name, account_type, current_balance, last_updated, registered_on
 FROM accounts
 ORDER BY name
 `
@@ -84,7 +84,7 @@ func (q *Queries) ListAccounts(ctx context.Context) ([]Account, error) {
 			&i.ID,
 			&i.ExternalID,
 			&i.Name,
-			&i.Type,
+			&i.AccountType,
 			&i.CurrentBalance,
 			&i.LastUpdated,
 			&i.RegisteredOn,
@@ -105,25 +105,25 @@ func (q *Queries) ListAccounts(ctx context.Context) ([]Account, error) {
 const updateAccount = `-- name: UpdateAccount :one
 UPDATE accounts
 SET name = ?,
-    type = ?,
+    account_type = ?,
     last_updated = CURRENT_TIMESTAMP
-WHERE id = ? RETURNING id, external_id, name, type, current_balance, last_updated, registered_on
+WHERE id = ? RETURNING id, external_id, name, account_type, current_balance, last_updated, registered_on
 `
 
 type UpdateAccountParams struct {
-	Name string
-	Type string
-	ID   string
+	Name        string
+	AccountType string
+	ID          string
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
-	row := q.db.QueryRowContext(ctx, updateAccount, arg.Name, arg.Type, arg.ID)
+	row := q.db.QueryRowContext(ctx, updateAccount, arg.Name, arg.AccountType, arg.ID)
 	var i Account
 	err := row.Scan(
 		&i.ID,
 		&i.ExternalID,
 		&i.Name,
-		&i.Type,
+		&i.AccountType,
 		&i.CurrentBalance,
 		&i.LastUpdated,
 		&i.RegisteredOn,
@@ -135,7 +135,7 @@ const updateCurrentBalance = `-- name: UpdateCurrentBalance :one
 UPDATE accounts
 SET current_balance = ?,
     last_updated = CURRENT_TIMESTAMP
-WHERE id = ? RETURNING id, external_id, name, type, current_balance, last_updated, registered_on
+WHERE id = ? RETURNING id, external_id, name, account_type, current_balance, last_updated, registered_on
 `
 
 type UpdateCurrentBalanceParams struct {
@@ -150,7 +150,7 @@ func (q *Queries) UpdateCurrentBalance(ctx context.Context, arg UpdateCurrentBal
 		&i.ID,
 		&i.ExternalID,
 		&i.Name,
-		&i.Type,
+		&i.AccountType,
 		&i.CurrentBalance,
 		&i.LastUpdated,
 		&i.RegisteredOn,

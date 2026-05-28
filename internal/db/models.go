@@ -13,7 +13,7 @@ type Account struct {
 	ID             string
 	ExternalID     sql.NullString
 	Name           string
-	Type           string
+	AccountType    string
 	CurrentBalance float64
 	LastUpdated    time.Time
 	RegisteredOn   time.Time
