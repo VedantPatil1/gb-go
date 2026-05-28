@@ -16,4 +16,3 @@ tasks:
     desc: Run the Zensical documentation server with live reloading
     cmds:
       - uv run zensical serve
-
