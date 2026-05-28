@@ -11,3 +11,9 @@ tasks:
     cmds:
       - echo "{{.GREETING}}"
     silent: true
+
+  docs:dev:
+    desc: Run the Zensical documentation server with live reloading
+    cmds:
+      - uv run zensical serve
+
