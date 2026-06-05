@@ -38,34 +38,35 @@ func TestGetAccount(t *testing.T) {
 			t.Fatalf("GetAccount returned an error: %v", err)
 		}
 
-		if account.ID != targetID {
-			t.Errorf("expected account ID %s, got %s", targetID, account.ID)
-		}
-
-		if account.Name != "HDFC Salary Wallet" {
-			t.Errorf("expected account name 'HDFC Salary Wallet', got '%s'", account.Name)
-		}
-
-		if account.AccountType != "bank" {
-			t.Errorf("expected account type 'bank', got '%s'", account.AccountType)
-		}
-
-		if account.CurrentBalance != 50000.00 {
-			t.Errorf("expected current balance 50000.00, got %f", account.CurrentBalance)
-		}
-
+		AssertEqual(t, "invalid account ID", targetID, account.ID)
+		AssertEqual(t, "invalid account name", "HDFC Salary Wallet", account.Name)
+		AssertEqual(t, "invalid account type", "bank", account.AccountType)
+		AssertEqual(t, "invalid current balance", 50000.00, account.CurrentBalance)
 	})
 
 	t.Run("GetAccount return appropriate error for non-existent account ID", func(t *testing.T) {
 		_, err := s.GetAccount(ctx, "non-existent-id")
 
-		if err == nil {
-			t.Fatal("expected an error for non-existent account ID, got nil")
-		}
-
-		if !errors.Is(err, service.ErrAccountNotFound) {
-			t.Errorf("expected error to be ErrAccountNotFound, got %v", err)
-		}
-
+		AssertError(t, service.ErrAccountNotFound, err)
 	})
+}
+
+func AssertEqual(t *testing.T, msg string, want, got any) {
+	t.Helper()
+
+	if want != got {
+		t.Errorf("%s: expected %v, got %v", msg, want, got)
+	}
+}
+
+func AssertError(t *testing.T, want, got error)  {
+	t.Helper()
+
+	if got == nil {
+		t.Errorf("no error returned: expected %v, got %v", want, got)
+	}
+
+	if !errors.Is(got, want) {
+		t.Errorf("unexpected error type: expected %v, got %v", want, got)
+	}
 }
