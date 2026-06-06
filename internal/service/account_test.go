@@ -51,6 +51,49 @@ func TestGetAccount(t *testing.T) {
 	})
 }
 
+func TestCreateAccount(t *testing.T) {
+
+	dbPool := setupTestDB(t)
+	defer func() {
+		err := dbPool.Close()
+		if err != nil {
+			t.Errorf("failed to close DB connection: %v", err)
+		}
+	}()
+
+	s := service.New(dbPool)
+	ctx := context.Background()
+
+	t.Run("create new account with valid details", func(t *testing.T) {
+
+		accountName := "Test Savings Account"
+		accountType := "bank"
+		initialBalance := 1000.00
+
+		account, err := s.CreateAccount(ctx, accountName, accountType, initialBalance)
+
+		if err != nil {
+			t.Fatalf("CreateAccount returned an error: %v", err)
+		}
+
+		if account.ID == "" {
+			t.Error("expected valid account ID, got empty sting")
+		}
+
+		if account.LastUpdated.IsZero() {
+			t.Error("expected valid last updated timestamp, got zero value")
+		}
+
+		if account.RegisteredOn.IsZero() {
+			t.Error("expected valid registered on timestamp, got zero value")
+		}
+
+		AssertEqual(t, "invalid account name", accountName, account.Name)
+		AssertEqual(t, "invalid account type", accountType, account.AccountType)
+		AssertEqual(t, "invalid initial balance", initialBalance, account.CurrentBalance)
+	})
+}
+
 func AssertEqual(t *testing.T, msg string, want, got any) {
 	t.Helper()
 
@@ -59,7 +102,7 @@ func AssertEqual(t *testing.T, msg string, want, got any) {
 	}
 }
 
-func AssertError(t *testing.T, want, got error)  {
+func AssertError(t *testing.T, want, got error) {
 	t.Helper()
 
 	if got == nil {

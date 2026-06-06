@@ -26,3 +26,17 @@ func (s *Service) GetAccount(ctx context.Context, id string) (db.Account, error)
 
 	return account, nil
 }
+
+func (s *Service) CreateAccount(ctx context.Context, name string, accountType string, initialBalance float64) (db.Account, error) {
+
+	accountPayload := db.CreateAccountParams{
+		ID:             "test-id",
+		Name:           name,
+		AccountType:    accountType,
+		CurrentBalance: initialBalance,
+	}
+	account, _ := s.queries.CreateAccount(ctx, accountPayload)
+
+	return account, nil
+
+}
