@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/VedantPatil1/gb-go/internal/db"
+	"github.com/google/uuid"
 )
 
 var (
@@ -29,8 +30,10 @@ func (s *Service) GetAccount(ctx context.Context, id string) (db.Account, error)
 
 func (s *Service) CreateAccount(ctx context.Context, name string, accountType string, initialBalance float64) (db.Account, error) {
 
+	id := uuid.New().String()
+
 	accountPayload := db.CreateAccountParams{
-		ID:             "test-id",
+		ID:             id,
 		Name:           name,
 		AccountType:    accountType,
 		CurrentBalance: initialBalance,
