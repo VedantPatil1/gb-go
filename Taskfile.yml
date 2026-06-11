@@ -1,18 +1,57 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 
-version: '3'
-
-vars:
-  GREETING: Hello, world!
+version: "3"
 
 tasks:
-  default:
-    desc: Print a greeting message
-    cmds:
-      - echo "{{.GREETING}}"
-    silent: true
+  # Test related tasks
+  test:
+    desc: Run all tests without coverage
+    cmd: go test ./...
 
-  docs:dev:
-    desc: Run the Zensical documentation server with live reloading
+  test:cover:
+    desc: Run all tests with code coverage
+    cmd: go test -cover ./...
+
+  cov:html:
+    desc: Generate HTML coverage report
     cmds:
-      - uv run zensical serve
+         - go test -coverprofile=coverage.out -covermode=count ./internal/service/...
+         - go tool cover -html=coverage.out -o coverage.html
+
+  cov:xml:
+    desc: Generate XML coverage report (for Codecov/Claude)
+    cmd: cp coverage.out coverage.xml
+
+  # Lint related tasks
+  lint:vet:
+    desc: Run go vet to check for issues
+    cmds:
+         - go vet ./...
+
+  lint:fmt:
+    desc: Run go fmt to format code
+    cmd: go fmt ./...
+
+  lint:golangci:
+    desc: Run golangci-lint
+    deps: [install-golangci-lint]
+
+  install-golangci-lint:
+    desc: Install golangci-lint if not available
+    cmds:
+         - |
+           command -v golangci-lint > /dev/null || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+  lint:all:
+    deps: [lint:vet,lint:fmt,lint:golangci]
+    desc: Run all linters (vet + fmt + golangci-lint)
+
+  full:
+    desc: Run tests and all linters
+    cmds:
+         - go test ./...
+         - go test -coverprofile=coverage.out -covermode=count ./internal/service/...
+         - go tool cover -html=coverage.out -o coverage.html
+         - cp coverage.out coverage.xml
+         - go vet ./...
+         - go fmt ./...
