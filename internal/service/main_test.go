@@ -2,6 +2,7 @@ package service_test
 
 import (
 	"database/sql"
+	"errors"
 	"os"
 	"testing"
 
@@ -28,6 +29,26 @@ func setupTestDB(t *testing.T) *sql.DB {
 	}
 
 	return dbPool
+}
+
+func AssertEqual(t *testing.T, msg string, want, got any) {
+	t.Helper()
+
+	if want != got {
+		t.Errorf("%s: expected %v, got %v", msg, want, got)
+	}
+}
+
+func AssertError(t *testing.T, want, got error) {
+	t.Helper()
+
+	if got == nil {
+		t.Errorf("no error returned: expected %v, got %v", want, got)
+	}
+
+	if !errors.Is(got, want) {
+		t.Errorf("unexpected error type: expected %v, got %v", want, got)
+	}
 }
 
 func TestMain(m *testing.M) {

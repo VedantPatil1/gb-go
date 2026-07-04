@@ -2,7 +2,6 @@ package service_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/VedantPatil1/gb-go/internal/service"
@@ -92,24 +91,4 @@ func TestCreateAccount(t *testing.T) {
 		AssertEqual(t, "invalid account type", accountType, account.AccountType)
 		AssertEqual(t, "invalid initial balance", initialBalance, account.CurrentBalance)
 	})
-}
-
-func AssertEqual(t *testing.T, msg string, want, got any) {
-	t.Helper()
-
-	if want != got {
-		t.Errorf("%s: expected %v, got %v", msg, want, got)
-	}
-}
-
-func AssertError(t *testing.T, want, got error) {
-	t.Helper()
-
-	if got == nil {
-		t.Errorf("no error returned: expected %v, got %v", want, got)
-	}
-
-	if !errors.Is(got, want) {
-		t.Errorf("unexpected error type: expected %v, got %v", want, got)
-	}
 }
