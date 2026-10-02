@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+  padding: 2rem;
+  font-family: system-ui, sans-serif;
+  color: grey;
+  background: orange;
+}
+
+h1 {
+  font-size: 2rem;
+}
