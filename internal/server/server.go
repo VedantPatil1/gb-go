@@ -2,6 +2,7 @@
 package server
 
 import (
+	"database/sql"
 	"io/fs"
 	"log/slog"
 	"net/http"
@@ -16,6 +17,7 @@ type Config struct {
 
 type Dependencies struct {
 	Logger *slog.Logger
+	Db *sql.DB
 }
 
 func NewServer(cfg Config, deps Dependencies) *http.Server {
