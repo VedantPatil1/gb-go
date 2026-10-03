@@ -14,6 +14,32 @@ import (
 const dbPath = "../../gb-go.db"
 const schemaPath = "db/schema.sql"
 
+type Config struct {
+	Port   string
+	Host   string
+	DBPath string
+}
+
+func loadConfig() Config {
+
+	host := os.Getenv("GBGO_HOST")
+
+	port := os.Getenv("GBGO_PORT")
+	if port == "" {
+		port = "8000"
+	}
+
+	dbPath := os.Getenv("GBGO_DB_PATH")
+	if dbPath == "" {
+		dbPath = "gb-go.db"
+	}
+
+	return Config{
+		Host: host,
+		Port: port,
+		DBPath: dbPath,
+	}
+}
 func openDB(dns string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite", dns)
 	if err != nil {
@@ -36,7 +62,7 @@ func migrate(ctx context.Context, db *sql.DB) error {
 		return fmt.Errorf("read schema: %w", err)
 	}
 
-	if _, err := db.Exec(string(schemaBytes)); err != nil {
+	if _, err := db.ExecContext(ctx, string(schemaBytes)); err != nil {
 		return fmt.Errorf("excecute schema: %w", err)
 	}
 
@@ -44,11 +70,13 @@ func migrate(ctx context.Context, db *sql.DB) error {
 }
 
 func main() {
+	config := loadConfig()
+
 	ctx := context.Background()
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	db, err := openDB(dbPath)
+	db, err := openDB(config.DBPath)
 	if err != nil {
 		logger.Error("failed to open database", "error", err)
 		os.Exit(1)
@@ -64,7 +92,7 @@ func main() {
 	logger.Info("database migration done successfully")
 
 	server := server.NewServer(
-		server.Config{Addr: ":8001"},
+		server.Config{Addr: config.Host + ":"+ config.Port},
 		server.Dependencies{Logger: logger, Db: db})
 	logger.Info("starting server", "addr", server.Addr)
 

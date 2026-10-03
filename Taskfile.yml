@@ -3,6 +3,9 @@
 version: "3"
 
 tasks:
+  run:
+    desc: Run web app
+    cmd: set -a && source .env && set +a && go run ./cmd/web/main.go
   # Test related tasks
   test:
     desc: Run all tests without coverage
